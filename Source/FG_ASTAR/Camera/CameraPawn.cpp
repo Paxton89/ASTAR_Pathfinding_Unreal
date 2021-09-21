@@ -69,7 +69,12 @@ void ACameraPawn::MoveRight(float Value)
 
 void ACameraPawn::LeftClick()
 {
-	if(TargetedTile != nullptr)
+	if(TargetedTile->isIllegal)
+	{
+		UE_LOG(LogTemp, Error, TEXT("TARGETED TILE IS ILLEGAL!, Aborting"))
+		EmptyPairedList();
+	}
+	else if(TargetedTile != nullptr)
 	{
 		DrawDebugCylinder(GetWorld(), TargetedTile->GetActorLocation(), TargetedTile->GetActorLocation() + TargetedTile->GetActorUpVector() * 30, 10, 18, FColor::Yellow, false, 6, 0, 1);
 		PairedTiles.Add(TargetedTile);

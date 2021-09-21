@@ -41,30 +41,36 @@ void ATile::Tick(float DeltaTime)
 
 void ATile::FindNeighbours()
 {
+	if(isIllegal) return;
 	FHitResult Hit;
+	ATile* HitTile;
 	//North
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
-	if(Hit.bBlockingHit)
+	HitTile = Cast<ATile>(Hit.Actor);
+	if(Hit.bBlockingHit && !HitTile->isIllegal)
 	{
-		Neighbours.Add(Cast<ATile>(Hit.Actor));
+		Neighbours.Add(HitTile);
 	}
 	//South
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorForwardVector() * -60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
-	if(Hit.bBlockingHit)
+	HitTile = Cast<ATile>(Hit.Actor);
+	if(Hit.bBlockingHit && !HitTile->isIllegal)
 	{
-		Neighbours.Add(Cast<ATile>(Hit.Actor));
+		Neighbours.Add(HitTile);
 	}
 	//East
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * 60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
-	if(Hit.bBlockingHit)
+	HitTile = Cast<ATile>(Hit.Actor);
+	if(Hit.bBlockingHit && !HitTile->isIllegal)
 	{
-		Neighbours.Add(Cast<ATile>(Hit.Actor));
+		Neighbours.Add(HitTile);
 	}
 	//West
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * -60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
-	if(Hit.bBlockingHit)
+	HitTile = Cast<ATile>(Hit.Actor);
+	if(Hit.bBlockingHit && !HitTile->isIllegal)
 	{
-		Neighbours.Add(Cast<ATile>(Hit.Actor));
+		Neighbours.Add(HitTile);
 	}
 }
 
@@ -98,6 +104,15 @@ void ATile::ToggleMaterialHidden()
 {
 	MouseOverMesh->SetVisibility(false);
 	bIsHighLighted = false;
+}
+
+void ATile::UpdateMaterial()
+{
+	if(isIllegal)
+	{
+		Mesh->SetHiddenInGame(true);
+		MouseOverMesh->SetHiddenInGame(true);
+	}
 }
 
 void ATile::ResetValues()

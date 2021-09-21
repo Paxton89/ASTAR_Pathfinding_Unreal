@@ -37,8 +37,13 @@ void AFG_ASTARGameModeBase::GenerateGrid()
 			NewTile->XPos = i;
 			NewTile->YPos = j;
 			auto NewTileBoundingBox = NewTile->GetComponentsBoundingBox();
-			NewActor->SetActorLocation(FVector(i * NewTileBoundingBox.GetSize().X, j * NewTileBoundingBox.GetSize().Y,
-			                                   0));
+			NewActor->SetActorLocation(FVector(i * NewTileBoundingBox.GetSize().X, j * NewTileBoundingBox.GetSize().Y, 0));
+			float RandNmbr = FMath::RandRange(0, 10);
+			if(RandNmbr < 2)
+			{
+				NewTile->isIllegal = true;
+			}
+			NewTile->UpdateMaterial();
 			NewTile->OriginLocation = NewTile->GetActorLocation();
 			NewTile->TargetLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 8;
 			AllTiles.Add(NewTile);
@@ -49,31 +54,22 @@ void AFG_ASTARGameModeBase::GenerateGrid()
 
 void AFG_ASTARGameModeBase::Calculate_G(ATile* RecivedTile) //Distance from starting node
 {
-	if (!RecivedTile->isIllegal)
-	{
-		RecivedTile->G_Value = 1;
-	}
+	RecivedTile->G_Value = 1;
 }
 
 void AFG_ASTARGameModeBase::Calculate_H(ATile* RecivedTile) // Distance from end node
 {
-	if (!RecivedTile->isIllegal)
-	{
-		float XDist = abs(EndTile->XPos - RecivedTile->XPos);
-		float YDist = abs(EndTile->YPos - RecivedTile->YPos);
-		float Manhattan = XDist + YDist;
-		float Hypotenuse = (XDist * XDist) + (YDist * YDist);
-		float Distance = Hypotenuse;
-		RecivedTile->H_Value = Distance;
-	}
+	float XDist = abs(EndTile->XPos - RecivedTile->XPos);
+	float YDist = abs(EndTile->YPos - RecivedTile->YPos);
+	float Manhattan = XDist + YDist;
+	float Hypotenuse = (XDist * XDist) + (YDist * YDist);
+	float Distance = Hypotenuse;
+	RecivedTile->H_Value = Distance;
 }
 
 void AFG_ASTARGameModeBase::Calculate_F(ATile* RecivedTile)
 {
-	if (!RecivedTile->isIllegal)
-	{
-		RecivedTile->F_Value = RecivedTile->G_Value + RecivedTile->H_Value;
-	}
+	RecivedTile->F_Value = RecivedTile->G_Value + RecivedTile->H_Value;
 }
 
 void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
@@ -83,9 +79,9 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
     {
     	Tile->ResetValues();
     }
-    
 	TArray<ATile*> OpenList;
 	TArray<ATile*> ClosedList;
+	//TArray<ATile*> Path;
 	Start->F_Value = 100;
 	StartTile = Start;
 	EndTile = End;
@@ -98,7 +94,7 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 	{
 		for (auto NextTile : CurrentTile->Neighbours)
 		{
-			if (!NextTile->isIllegal && !ClosedList.Contains(NextTile))
+			if (!ClosedList.Contains(NextTile))
 			{
 				Calculate_H(NextTile);
 				Calculate_F(NextTile);
@@ -113,7 +109,7 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 			}
 			else
 			{
-				OpenList.Add(NextTile);
+				OpenList.Add(NextTile);		
 			}
 			NextTile->G_Value = CostToNext;
 			NextTile->Parent = CurrentTile;
@@ -130,9 +126,9 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 				GigaF = CurrentTile->F_Value;
 			}
 		}
+		//Path.AddUnique(CurrentTile);
 		if(CurrentTile == EndTile)
 		{
-			ClosedList.Add(CurrentTile);
 			DrawPath(ClosedList);
 			UE_LOG(LogTemp, Warning, TEXT("Path Calculated"));
 			break;
@@ -143,7 +139,6 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 		UE_LOG(LogTemp, Log, TEXT("Couldn't calculate path"));
 	}
 }
-
 
 void AFG_ASTARGameModeBase::DrawPath(TArray<ATile*> List)
 {

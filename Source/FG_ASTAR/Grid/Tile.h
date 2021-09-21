@@ -34,6 +34,7 @@ public:
 	void FindNeighbours();
 	void ToggleMaterialVisible();
 	void ToggleMaterialHidden();
+	void UpdateMaterial();
 	void ResetValues();
 	
 protected:
@@ -52,6 +53,8 @@ protected:
 	UMaterialInstance* Mat_MouseOverLegal;
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* Mat_MouseOverIllegal;
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* Mat_IllegalTile;
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Box;
 	
