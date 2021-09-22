@@ -37,9 +37,9 @@ void AFG_ASTARGameModeBase::GenerateGrid()
 			NewTile->XPos = i;
 			NewTile->YPos = j;
 			auto NewTileBoundingBox = NewTile->GetComponentsBoundingBox();
-			NewActor->SetActorLocation(FVector(i * NewTileBoundingBox.GetSize().X, j * NewTileBoundingBox.GetSize().Y, 0));
+			NewActor->SetActorLocation(FVector(i * NewTileBoundingBox.GetSize().X, j * NewTileBoundingBox.GetSize().Y,0));
 			float RandNmbr = FMath::RandRange(0, 10);
-			if(RandNmbr < 2)
+			if (RandNmbr < 2.5)
 			{
 				NewTile->isIllegal = true;
 			}
@@ -47,7 +47,6 @@ void AFG_ASTARGameModeBase::GenerateGrid()
 			NewTile->OriginLocation = NewTile->GetActorLocation();
 			NewTile->TargetLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 8;
 			AllTiles.Add(NewTile);
-			//UE_LOG(LogTemp, Warning, TEXT("Tile: %i,%i"),NewTile->XPos, NewTile->YPos);
 		}
 	}
 }
@@ -76,12 +75,13 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 {
 	//Init :)
 	for (auto Tile : AllTiles)
-    {
-    	Tile->ResetValues();
-    }
+	{
+		Tile->ResetValues();
+	}
+	COLOR = FColor::MakeRandomColor();
 	TArray<ATile*> OpenList;
 	TArray<ATile*> ClosedList;
-	//TArray<ATile*> Path;
+	TArray<ATile*> Path;
 	Start->F_Value = 100;
 	StartTile = Start;
 	EndTile = End;
@@ -98,7 +98,12 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 			{
 				Calculate_H(NextTile);
 				Calculate_F(NextTile);
-			} 
+			}
+			else
+			{
+				//Closedlist contains NextTile -- Cancel For-loop
+				continue;
+			}
 			int CostToNext = CurrentTile->G_Value + CurrentTile->F_Value + NextTile->F_Value;
 			if (OpenList.Contains(NextTile))
 			{
@@ -109,42 +114,39 @@ void AFG_ASTARGameModeBase::CalculatePath(ATile* Start, ATile* End)
 			}
 			else
 			{
-				OpenList.Add(NextTile);		
+				OpenList.Add(NextTile);
 			}
 			NextTile->G_Value = CostToNext;
 			NextTile->Parent = CurrentTile;
 		}
-		UE_LOG(LogTemp, Log, TEXT("exited foreach loop"));
 		ClosedList.Add(CurrentTile);
 		OpenList.Remove(CurrentTile);
-		int GigaF = 9999999;
+		int GigaF = INT_MAX;
 		for (auto OpenTile : OpenList)
 		{
-			if(OpenTile->F_Value < GigaF)
+			if (OpenTile->F_Value < GigaF)
 			{
 				CurrentTile = OpenTile;
 				GigaF = CurrentTile->F_Value;
 			}
 		}
-		//Path.AddUnique(CurrentTile);
-		if(CurrentTile == EndTile)
+		if (CurrentTile == EndTile)
 		{
-			DrawPath(ClosedList);
-			UE_LOG(LogTemp, Warning, TEXT("Path Calculated"));
+			DrawPath(CurrentTile);
+			UE_LOG(LogTemp, Warning, TEXT("Path Calculated - yay!"));
 			break;
 		}
 	}
 	if (CurrentTile != EndTile)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Couldn't calculate path"));
+		UE_LOG(LogTemp, Error, TEXT("Couldn't calculate path"));
 	}
 }
 
-void AFG_ASTARGameModeBase::DrawPath(TArray<ATile*> List)
+void AFG_ASTARGameModeBase::DrawPath(ATile* Tile)
 {
-	auto COLOR = FColor::MakeRandomColor();
-	for (auto Tile : List)
-	{
-		DrawDebugCylinder(GetWorld(), Tile->GetActorLocation(), Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 8, 18, COLOR, false, 6, 0, 1);
-	}
+	if(Tile->Parent == nullptr) return;
+	DrawDebugCylinder(GetWorld(), Tile->GetActorLocation(), Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 8,18, COLOR, false, 6, 0, 1);
+	DrawDebugDirectionalArrow(GetWorld(), Tile->Parent->GetActorLocation() + Tile->GetActorUpVector() * 30,Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 7, COLOR, false, 10, 0,2);
+	DrawPath(Tile->Parent);
 }

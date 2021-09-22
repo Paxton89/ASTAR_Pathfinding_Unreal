@@ -17,7 +17,6 @@ ATile::ATile()
 	MouseOverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MouseOverMesh"));
 	MouseOverMesh->SetCollisionProfileName("NoCollision");
 	MouseOverMesh->SetupAttachment(RootComponent);
-	
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	Box->SetCollisionProfileName("BlockAllDynamic");
 	Box->SetupAttachment(RootComponent);

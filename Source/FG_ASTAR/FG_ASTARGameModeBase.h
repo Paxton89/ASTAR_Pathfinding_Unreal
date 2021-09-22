@@ -8,7 +8,6 @@
 
 class ATile;
 class ACameraPawn;
-
 UCLASS()
 class FG_ASTAR_API AFG_ASTARGameModeBase : public AGameModeBase
 {
@@ -25,7 +24,7 @@ class FG_ASTAR_API AFG_ASTARGameModeBase : public AGameModeBase
 	AFG_ASTARGameModeBase();
 	virtual void BeginPlay() override;
 	void GenerateGrid();
-	void DrawPath(TArray<ATile*> List);
+	void DrawPath(ATile* Tile);
 	void Calculate_G(ATile* CurrentTile);
 	void Calculate_H(ATile* CurrentTile);
 	void Calculate_F(ATile* CurrentTile);
@@ -41,4 +40,7 @@ class FG_ASTAR_API AFG_ASTARGameModeBase : public AGameModeBase
 	TArray<ATile*> AllTiles;
 	ATile* StartTile;
 	ATile* EndTile;
+	ATile* Parent;
+	
+	FColor COLOR;
 };

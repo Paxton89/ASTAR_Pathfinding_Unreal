@@ -5,6 +5,7 @@
 #include "FG_ASTAR/Grid/Tile.h"
 #include "Camera/CameraComponent.h"
 #include "FG_ASTAR/FG_ASTARGameModeBase.h"
+#include "FG_ASTAR/Units/Components/Unit_Movement_Component.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -69,6 +70,7 @@ void ACameraPawn::MoveRight(float Value)
 
 void ACameraPawn::LeftClick()
 {
+	
 	if(TargetedTile->isIllegal)
 	{
 		UE_LOG(LogTemp, Error, TEXT("TARGETED TILE IS ILLEGAL!, Aborting"))

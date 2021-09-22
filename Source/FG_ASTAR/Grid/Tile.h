@@ -30,13 +30,17 @@ public:
 	
 	TArray<ATile*> Neighbours;
 	ATile* Parent;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* MouseOverMesh;
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* Mat_MouseOverIllegal;
 	
 	void FindNeighbours();
 	void ToggleMaterialVisible();
 	void ToggleMaterialHidden();
 	void UpdateMaterial();
 	void ResetValues();
-	
 protected:
 	float HighlightBuffer = 0.05;
 	
@@ -48,11 +52,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere)
-    UStaticMeshComponent* MouseOverMesh;
-	UPROPERTY(EditAnywhere)
 	UMaterialInstance* Mat_MouseOverLegal;
-	UPROPERTY(EditAnywhere)
-	UMaterialInstance* Mat_MouseOverIllegal;
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* Mat_IllegalTile;
 	UPROPERTY(EditAnywhere)
