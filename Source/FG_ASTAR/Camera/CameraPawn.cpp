@@ -5,7 +5,7 @@
 #include "FG_ASTAR/Grid/Tile.h"
 #include "Camera/CameraComponent.h"
 #include "FG_ASTAR/FG_ASTARGameModeBase.h"
-#include "FG_ASTAR/Units/Components/Unit_Movement_Component.h"
+#include "FG_ASTAR/Grid/Components/ASTAR_Component.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -87,7 +87,7 @@ void ACameraPawn::LeftClick()
 		else if(PairedTiles.Num() == 2 && PairedTiles.Top() != StartTile) // If List has 2 elements
 		{
 			EndTile = PairedTiles.Top();
-			GameMode->CalculatePath(StartTile, EndTile);
+			GameMode->GetAstarComponent()->CalculatePath(StartTile, EndTile);
 			EmptyPairedList();
 		}
 		else if(PairedTiles.Num() > 2)

@@ -8,39 +8,32 @@
 
 class ATile;
 class ACameraPawn;
+class UGridGeneratorComponent;
+class UASTAR_Component;
 UCLASS()
 class FG_ASTAR_API AFG_ASTARGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
 	public:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ATile> TileBP;
+	
 	APlayerController* PlayerController;
-	ATile* HighlightedTile;
-	ATile* CurrentTile;
-	ACameraPawn* CameraPawn;
-	void CalculatePath(ATile* Start, ATile* End);
+	
+	TArray<ATile*> AllTiles;
+	
+	UASTAR_Component* GetAstarComponent();
 	
 	protected:
 	AFG_ASTARGameModeBase();
 	virtual void BeginPlay() override;
-	void GenerateGrid();
-	void DrawPath(ATile* Tile);
-	void Calculate_G(ATile* CurrentTile);
-	void Calculate_H(ATile* CurrentTile);
-	void Calculate_F(ATile* CurrentTile);
 
+	UGridGeneratorComponent* GridGeneratorComponent;
+	UASTAR_Component* ASTAR_Component;
 	
 	UPROPERTY(EditAnywhere)
 	int GridXSize = 3;
 	UPROPERTY(EditAnywhere)
 	int GridYSize = 3;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ATile> TileBP;
-
-	TArray<ATile*> AllTiles;
-	ATile* StartTile;
-	ATile* EndTile;
-	ATile* Parent;
-	
-	FColor COLOR;
 };

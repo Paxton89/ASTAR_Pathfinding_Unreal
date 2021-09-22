@@ -97,7 +97,6 @@ void ATile::ToggleMaterialVisible()
 	HighlightBuffer = 0.05;
 	MouseOverMesh->SetVisibility(true);
 	bIsHighLighted = true;
-	GameMode->HighlightedTile = this;
 }
 void ATile::ToggleMaterialHidden()
 {
@@ -128,10 +127,6 @@ void ATile::RemoveHighlight()
 	if(HighlightBuffer < 0)
 	{
 		ToggleMaterialHidden();
-		if(GameMode->HighlightedTile == this)
-		{
-			GameMode->HighlightedTile = nullptr;
-		}
 	}
 }
 
