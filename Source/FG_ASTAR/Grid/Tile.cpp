@@ -27,6 +27,7 @@ void ATile::BeginPlay()
 	Super::BeginPlay();
 	GameMode = Cast<AFG_ASTARGameModeBase>(GetWorld()->GetAuthGameMode());
 	IgnoreList.Add(this);
+	MouseOverMesh->SetMaterial(0, Mat_MouseOverLegal);
 	MouseOverMesh->ToggleVisibility();
 }
 
@@ -40,34 +41,34 @@ void ATile::Tick(float DeltaTime)
 
 void ATile::FindNeighbours()
 {
-	if(isIllegal) return;
+	if(bIsIllegal) return;
 	FHitResult Hit;
 	ATile* HitTile;
 	//North
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
 	HitTile = Cast<ATile>(Hit.Actor);
-	if(Hit.bBlockingHit && !HitTile->isIllegal)
+	if(Hit.bBlockingHit && !HitTile->bIsIllegal)
 	{
 		Neighbours.Add(HitTile);
 	}
 	//South
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorForwardVector() * -60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
 	HitTile = Cast<ATile>(Hit.Actor);
-	if(Hit.bBlockingHit && !HitTile->isIllegal)
+	if(Hit.bBlockingHit && !HitTile->bIsIllegal)
 	{
 		Neighbours.Add(HitTile);
 	}
 	//East
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * 60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
 	HitTile = Cast<ATile>(Hit.Actor);
-	if(Hit.bBlockingHit && !HitTile->isIllegal)
+	if(Hit.bBlockingHit && !HitTile->bIsIllegal)
 	{
 		Neighbours.Add(HitTile);
 	}
 	//West
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * -60, UEngineTypes::ConvertToTraceType(ECC_WorldDynamic), false, IgnoreList, EDrawDebugTrace::ForOneFrame, Hit, true);
 	HitTile = Cast<ATile>(Hit.Actor);
-	if(Hit.bBlockingHit && !HitTile->isIllegal)
+	if(Hit.bBlockingHit && !HitTile->bIsIllegal)
 	{
 		Neighbours.Add(HitTile);
 	}
@@ -109,16 +110,27 @@ void ATile::ToggleMaterialHidden()
 
 void ATile::UpdateMaterial()
 {
-	if(isIllegal)
+	if(bIsIllegal)
 	{
 		Mesh->SetHiddenInGame(true);
 		MouseOverMesh->SetHiddenInGame(true);
+	}
+	else if(bIsExpensive)
+	{
+		Mesh->SetMaterial(0, Mat_ExpensiveTile);
 	}
 }
 
 void ATile::ResetValues()
 {
-	G_Value = 1;
+	if(bIsExpensive)
+	{
+		G_Value = GameMode->ExpensiveTilePrice;
+	}
+	else
+	{
+		G_Value = 150;
+	}
 	H_Value = NULL;
     F_Value = NULL;
 	Parent = nullptr;

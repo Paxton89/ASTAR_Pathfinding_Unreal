@@ -16,12 +16,12 @@ class FG_ASTAR_API ATile : public AActor
 public:	
 	ATile();
 	
-	bool isIllegal = false;
-	
+	bool bIsIllegal = false;
+	bool bIsExpensive = false;
 	int XPos;
 	int YPos;
 
-	double G_Value = 1; //Base Tile Cost
+	double G_Value = 150; //Base Tile Cost
 	double H_Value; // Distance From End
 	double F_Value; // Distance from End + Base Tile Cost
 
@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* Mat_MouseOverLegal;
 	UPROPERTY(EditAnywhere)
-	UMaterialInstance* Mat_IllegalTile;
+	UMaterialInstance* Mat_ExpensiveTile;
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Box;
 	

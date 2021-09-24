@@ -33,14 +33,22 @@ void UGridGeneratorComponent::CreateTile(int x, int y)
 	NewTile->YPos = y;
 	auto NewTileBoundingBox = NewTile->GetComponentsBoundingBox();
 	NewActor->SetActorLocation(FVector(NewTile->XPos * NewTileBoundingBox.GetSize().X, NewTile->YPos * NewTileBoundingBox.GetSize().Y,0));
+	NewTile->OriginLocation = NewTile->GetActorLocation();
+	NewTile->TargetLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 8;
+	
 	float RandNmbr = FMath::RandRange(0, 10);
 	if (RandNmbr < 2)
 	{
-		NewTile->isIllegal = true;
+		NewTile->bIsIllegal = true;
 	}
+	else if(RandNmbr < 3 && !NewTile->bIsIllegal && GameMode->bMakeSomeTilesExpensive)
+	{
+		NewTile->OriginLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 16;
+		NewTile->TargetLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 20;
+		NewTile->bIsExpensive = true;
+	}
+	NewTile->ResetValues();
 	NewTile->UpdateMaterial();
-	NewTile->OriginLocation = NewTile->GetActorLocation();
-	NewTile->TargetLocation = NewTile->GetActorLocation() + NewTile->GetActorUpVector() * 8;
 	GameMode->AllTiles.Add(NewTile);
 }
 

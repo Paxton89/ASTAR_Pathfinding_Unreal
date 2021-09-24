@@ -26,3 +26,8 @@ UASTAR_Component* AFG_ASTARGameModeBase::GetAstarComponent()
 {
 	return ASTAR_Component;
 }
+
+UGridGeneratorComponent* AFG_ASTARGameModeBase::GetGridGenerator()
+{
+	return GridGeneratorComponent;
+}

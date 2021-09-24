@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "FG_ASTAR/FG_ASTARGameModeBase.h"
 #include "FG_ASTAR/Grid/Components/ASTAR_Component.h"
+#include "FG_ASTAR/Grid/Components/GridGeneratorComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -52,6 +53,7 @@ void ACameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACameraPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACameraPawn::MoveRight);
 	PlayerInputComponent->BindAction("LeftClick", IE_Pressed, this, &ACameraPawn::LeftClick);
+	PlayerInputComponent->BindAction("GenerateNew", IE_Pressed, this, &ACameraPawn::GenerateNewGrid);
 }
 
 void ACameraPawn::EmptyPairedList()
@@ -71,7 +73,7 @@ void ACameraPawn::MoveRight(float Value)
 void ACameraPawn::LeftClick()
 {
 	
-	if(TargetedTile->isIllegal)
+	if(TargetedTile->bIsIllegal)
 	{
 		UE_LOG(LogTemp, Error, TEXT("TARGETED TILE IS ILLEGAL!, Aborting"))
 		EmptyPairedList();
@@ -93,12 +95,25 @@ void ACameraPawn::LeftClick()
 		else if(PairedTiles.Num() > 2)
 		{
 			EmptyPairedList();
-			UE_LOG(LogTemp, Warning, TEXT("PairedTilesList has more than 2 elements, Aborting"))
+			UE_LOG(LogTemp, Warning, TEXT("PairedTilesList has more than 2 elements, Aborting"));
 		}
 		else if(PairedTiles.Top() == StartTile)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Start Tile & End tile may not be the same, Aborting"))
+			UE_LOG(LogTemp, Warning, TEXT("Start Tile & End tile may not be the same, Aborting"));
 			EmptyPairedList();
 		}
 	}
+}
+
+void ACameraPawn::GenerateNewGrid()
+{
+	EmptyPairedList();
+	UE_LOG(LogTemp, Error, TEXT("Destroying old grid!"));
+	for (auto Tile : GameMode->AllTiles)
+	{
+		Tile->ResetValues();
+		Tile->Destroy();
+	}
+	GameMode->GetGridGenerator()->GenerateGrid(GameMode->GridXSize, GameMode->GridYSize);
+	UE_LOG(LogTemp, Warning, TEXT("Generating brand new grid!"));
 }

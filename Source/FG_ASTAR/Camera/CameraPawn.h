@@ -24,6 +24,7 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void LeftClick();
+	void GenerateNewGrid();
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* Scene;

@@ -16,21 +16,22 @@ void UASTAR_Component::BeginPlay()
 	Super::BeginPlay();
 	GameMode = Cast<AFG_ASTARGameModeBase>(GetOwner());
 }
-
-void UASTAR_Component::Calculate_G(ATile* ReceivedTile)
+/*
+void UASTAR_Component::Update_G(ATile* ReceivedTile)
 {
-	ReceivedTile->G_Value = 1;
+	ReceivedTile->G_Value += CurrentTile->G_Value;
 } // Base Cost
-void UASTAR_Component::Calculate_H(ATile* ReceivedTile)
+*/
+void UASTAR_Component::Update_H(ATile* ReceivedTile)
 {
 	float XDist = abs(EndTile->XPos - ReceivedTile->XPos);
 	float YDist = abs(EndTile->YPos - ReceivedTile->YPos);
 	float Manhattan = XDist + YDist;
 	float Hypotenuse = (XDist * XDist) + (YDist * YDist);
 	float Distance = Hypotenuse;
-	ReceivedTile->H_Value = Distance;
+	ReceivedTile->H_Value = Manhattan;
 } //Distance from end Node
-void UASTAR_Component::Calculate_F(ATile* ReceivedTile)
+void UASTAR_Component::Update_F(ATile* ReceivedTile)
 {
 	ReceivedTile->F_Value = ReceivedTile->G_Value + ReceivedTile->H_Value;
 } //Base Cost + Distance from End
@@ -45,8 +46,8 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 	Start->F_Value = 999;
 	StartTile = Start;
 	EndTile = End;
-	Calculate_H(Start); // How far is start from end?
-	Calculate_H(End); // Set End H to 0
+	Update_H(Start); // How far is start from end?
+	Update_H(End); // Set End H to 0
 
 	CurrentTile = Start;
 	TilesToTest.Add(CurrentTile);
@@ -56,8 +57,9 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 		{
 			if (!ExploredTiles.Contains(InspectedTile)) //If we have not explored this neighbour
 			{
-				Calculate_H(InspectedTile);
-				Calculate_F(InspectedTile);
+				//Update_G(InspectedTile);
+				Update_H(InspectedTile);
+				Update_F(InspectedTile);
 			}
 			else
 			{
@@ -73,7 +75,7 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 					continue;
 				}
 				*/
-				// if we have already marked this tile for testing continue;
+				// if we have already marked this tile for testing -- continue;
 				continue;
 			}
 			else
@@ -81,15 +83,17 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 				// else mark it for testing
 				TilesToTest.Add(InspectedTile);
 			}
-			int CostToNext = CurrentTile->F_Value + InspectedTile->F_Value;
+			int CostToNext = CurrentTile->F_Value + CurrentTile->G_Value + InspectedTile->F_Value;
 			InspectedTile->G_Value = CostToNext; //Inspected tile now gets updated cost, (CurrentF + InspectedF) -------------- //CurrentTile->G_Value +\\ removed bcus why?
 			InspectedTile->Parent = CurrentTile; //Parent InspectedTile to Current
 		}
-		ExploredTiles.Add(CurrentTile); //Tile fully Explored
+		ExploredTiles.Add(CurrentTile); //CurrentTile fully Explored
 		TilesToTest.Remove(CurrentTile);
+		
 		int CheapestF = INT_MAX;
 		for (auto TestedTile : TilesToTest) //Now Iterate through all tiles marked for testing
 		{
+			Update_F(TestedTile);
 			if (TestedTile->F_Value < CheapestF) // Is TestedTile cheaper than Currently cheapest F?
 			{
 				CurrentTile = TestedTile; //YES
@@ -100,10 +104,11 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 		{
 			DrawPath(CurrentTile); //Draw the path
 			UE_LOG(LogTemp, Warning, TEXT("Path Calculated - yay!"));
+			UE_LOG(LogTemp, Warning, TEXT("path cost = %f"), CurrentTile->F_Value);
 			break; //DONE
 		}
 	}
-	if (CurrentTile != EndTile) // if could not find EndTile before exhausting all availible tiles
+	if (CurrentTile != EndTile) // if could not find EndTile before exhausting all available tiles
 	{
 		UE_LOG(LogTemp, Error, TEXT("Couldn't calculate path"));
 	}
@@ -112,8 +117,8 @@ void UASTAR_Component::CalculatePath(ATile* Start, ATile* End)
 void UASTAR_Component::DrawPath(ATile* Tile)
 {
 	if(Tile->Parent == nullptr) return;
-	DrawDebugCylinder(GetWorld(), Tile->GetActorLocation(), Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 8,18, COLOR, false, 6, 0, 1);
-	DrawDebugDirectionalArrow(GetWorld(), Tile->Parent->GetActorLocation() + Tile->GetActorUpVector() * 30,Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 7, COLOR, false, 10, 0,2);
+	DrawDebugCylinder(GetWorld(), Tile->GetActorLocation(), Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 8,18, COLOR, false, 4, 0, 1);
+	DrawDebugDirectionalArrow(GetWorld(), Tile->Parent->GetActorLocation() + Tile->GetActorUpVector() * 30,Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 7, COLOR, false, 7, 0,2);
 	DrawPath(Tile->Parent);
 }
 

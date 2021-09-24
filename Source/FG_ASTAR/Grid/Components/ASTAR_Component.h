@@ -28,7 +28,7 @@ protected:
 
 	void ResetTileValues();
 	void DrawPath(ATile* Tile);
-	void Calculate_G(ATile* ReceivedTile);
-	void Calculate_H(ATile* ReceivedTile);
-	void Calculate_F(ATile* ReceivedTile);
+	void Update_G(ATile* ReceivedTile);
+	void Update_H(ATile* ReceivedTile);
+	void Update_F(ATile* ReceivedTile);
 };
