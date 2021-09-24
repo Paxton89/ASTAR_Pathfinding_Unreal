@@ -1,4 +1,4 @@
-
+// Author: Johan Liljedahl
 #pragma once
 
 #include "CoreMinimal.h"

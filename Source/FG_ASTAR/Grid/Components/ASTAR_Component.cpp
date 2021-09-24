@@ -1,7 +1,9 @@
+// Author: Johan Liljedahl
+#include "FG_ASTAR/Grid/Components/ASTAR_Component.h"
 #include "FG_ASTAR/FG_ASTARGameModeBase.h"
 #include "DrawDebugHelpers.h"
 #include "FG_ASTAR/Grid/Tile.h"
-#include "FG_ASTAR/Grid/Components/ASTAR_Component.h"
+
 
 
 UASTAR_Component::UASTAR_Component()
@@ -114,6 +116,7 @@ void UASTAR_Component::DrawPath(ATile* Tile)
 	DrawDebugDirectionalArrow(GetWorld(), Tile->Parent->GetActorLocation() + Tile->GetActorUpVector() * 30,Tile->GetActorLocation() + Tile->GetActorUpVector() * 30, 7, COLOR, false, 10, 0,2);
 	DrawPath(Tile->Parent);
 }
+
 void UASTAR_Component::ResetTileValues()
 {
 	for (auto Tile : GameMode->AllTiles)

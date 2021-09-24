@@ -1,3 +1,4 @@
+// Author: Johan Liljedahl
 #include "FG_ASTAR/Grid/Components/GridGeneratorComponent.h"
 #include "FG_ASTAR/FG_ASTARGameModeBase.h"
 #include "FG_ASTAR/Grid/Tile.h"

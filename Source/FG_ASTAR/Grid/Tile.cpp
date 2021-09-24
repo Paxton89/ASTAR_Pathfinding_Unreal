@@ -1,4 +1,4 @@
-//Author: Johan Liljedahl
+// Author: Johan Liljedahl
 
 #include "FG_ASTAR/Grid/Tile.h"
 #include "DrawDebugHelpers.h"
@@ -80,6 +80,7 @@ void ATile::DrawDebug()
 	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * 60, FColor::MakeRandomColor(), false, 0.01, 0, 4);
 	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRightVector() * -60, FColor::MakeRandomColor(), false, 0.01, 0, 4);
 }
+
 void ATile::RaiseIfTargeted()
 {
 	FVector CurrentLocation = GetActorLocation();
@@ -92,12 +93,14 @@ void ATile::RaiseIfTargeted()
 		SetActorLocation(FMath::Lerp(CurrentLocation, OriginLocation, 0.05));
 	}
 }
+
 void ATile::ToggleMaterialVisible()
 {
 	HighlightBuffer = 0.05;
 	MouseOverMesh->SetVisibility(true);
 	bIsHighLighted = true;
 }
+
 void ATile::ToggleMaterialHidden()
 {
 	MouseOverMesh->SetVisibility(false);

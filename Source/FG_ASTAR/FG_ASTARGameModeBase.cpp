@@ -1,4 +1,4 @@
-
+// Author: Johan Liljedahl
 #include "FG_ASTARGameModeBase.h"
 #include "Grid/Tile.h"
 #include "Kismet/GameplayStatics.h"
